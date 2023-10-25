@@ -7,7 +7,7 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-    name: 'CronometroTarefa',
+    name: 'Cronometro',
     props: {
         tempoEmSegundos: {
             type: Number,
