@@ -15,9 +15,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { myUseStore } from '@/store'
-import { ALTERA_PROJETO, ADICIONA_PROJETO } from '@/store/tipo-mutacoes'
 import { TipoNotificacao } from '@/enums/tipo-notificacao';
 import useNotificador from '@/hooks/notificador'
+import { CADASTRAR_PROJETOS, ALTERAR_PROJETOS } from '@/store/tipo-acoes';
 
 export default defineComponent({
     name: 'Formulario',
@@ -34,13 +34,17 @@ export default defineComponent({
     methods: {
         salvar() {
             if(this.id) {
-                this.store.commit(ALTERA_PROJETO, {
+                this.store.dispatch(ALTERAR_PROJETOS, {
                     id: this.id,
                     nome: this.nomeDoProjeto
-                })
+                }).then(() => this.lidarComSucesso())
             } else {
-                this.store.commit(ADICIONA_PROJETO, this.nomeDoProjeto)
+                this.store.dispatch(CADASTRAR_PROJETOS, this.nomeDoProjeto)
+                    .then(() => this.lidarComSucesso())
             }
+            
+        },
+        lidarComSucesso() {
             this.nomeDoProjeto = '';
             this.$router.push('/projetos');
             this.notificar(

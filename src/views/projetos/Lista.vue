@@ -15,7 +15,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(projeto, index) in projetos" :key="projeto.id">
+                <tr v-for="projeto in projetos" :key="projeto.id">
                     <td>{{ projeto.id }}</td>
                     <td>{{ projeto.nome }}</td>
                     <td>
@@ -24,7 +24,7 @@
                                 <i class="fas fa-pencil-alt"></i>
                             </span>
                         </router-link>
-                        <button class="button ml-2 is-danger" @click="excluir(index)">
+                        <button class="button ml-2 is-danger" @click="excluir(projeto.id)">
                             <span class="icon is-small">
                                 <i class="fas fa-trash"></i>
                             </span>
@@ -39,23 +39,27 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import { myUseStore } from '@/store'
-import { EXCLUI_PROJETO, NOTIFICAR } from '@/store/tipo-mutacoes'
 import { TipoNotificacao } from '@/enums/tipo-notificacao';
+import { OBTER_PROJETOS, REMOVER_PROJETOS } from '@/store/tipo-acoes';
+import { NOTIFICAR } from '@/store/tipo-mutacoes';
 
 export default defineComponent({
     name: 'Lista',
     methods: {
-        excluir(index: number) {
-            this.store.commit(EXCLUI_PROJETO, index);
-            this.store.commit(NOTIFICAR, {
-                titulo: 'PRONTO!',
-                texto: 'Seu projeto foi deletado',
-                tipo: TipoNotificacao.SUCCESS
-            })
+        excluir(projetoId: number) {
+            this.store.dispatch(REMOVER_PROJETOS, projetoId)
+                .then(() => {
+                    this.store.commit(NOTIFICAR, {
+                        titulo: 'PRONTO!',
+                        texto: 'Seu projeto foi deletado',
+                        tipo: TipoNotificacao.SUCCESS
+                    })
+                })
         }
     },
     setup() {
         const store = myUseStore()
+        store.dispatch(OBTER_PROJETOS)
         return {
             store,
             projetos: computed(() => store.state.projetos)
