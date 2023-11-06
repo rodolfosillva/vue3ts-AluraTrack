@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 import Temporizador from './Temporizador.vue';
 
 import { myUseStore } from '@/store'
@@ -31,26 +31,27 @@ export default defineComponent({
     name: 'Formulario',
     components: { Temporizador },
     emits: ['aoSalvarTarefa'],
-    data() {
-        return {
-            descricao: 'Estudar Vue3 com Type Script',
-            idProjeto: ''
-        }
-    },
-    methods: {
-        salvarTarefa(tempoDecorrido: number): void {
-            this.$emit('aoSalvarTarefa', {
-                duracaoEmSegungos: tempoDecorrido,
-                descricao: this.descricao,
-                projeto: this.projetos.find(projeto => projeto.id == this.idProjeto)
-            })
-            this.descricao = '';
-        }
-    },
-    setup() {
+    setup(props, { emit }) {
         const store = myUseStore();
+
+        const projetos = computed(() => store.state.projeto.projetos);
+        const descricao = ref('Estudar Vue3 com Type Script');
+        const idProjeto = ref('');
+
+        const salvarTarefa = (tempoDecorrido: number): void => {
+            emit('aoSalvarTarefa', {
+                duracaoEmSegungos: tempoDecorrido,
+                descricao: descricao.value,
+                projeto: projetos.value.find(projeto => projeto.id == idProjeto.value)
+            })
+            descricao.value = '';
+        }
+
         return {
-            projetos: computed(() => store.state.projeto.projetos)
+            projetos,
+            descricao,
+            idProjeto,
+            salvarTarefa
         }
     }
 })

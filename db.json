@@ -40,6 +40,15 @@
         "id": 4
       },
       "id": 3
+    },
+    {
+      "duracaoEmSegungos": 2,
+      "descricao": "Estudar Vue3 com Typ",
+      "projeto": {
+        "nome": "Home",
+        "id": 4
+      },
+      "id": 4
     }
   ]
 }
