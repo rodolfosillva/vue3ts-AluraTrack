@@ -40,14 +40,14 @@
 import { computed, defineComponent } from 'vue';
 import { myUseStore } from '@/store'
 import { TipoNotificacao } from '@/enums/tipo-notificacao';
-import { OBTER_PROJETOS, REMOVER_PROJETOS } from '@/store/tipo-acoes';
+import { OBTER_PROJETOS, REMOVER_PROJETO } from '@/store/tipo-acoes';
 import { NOTIFICAR } from '@/store/tipo-mutacoes';
 
 export default defineComponent({
     name: 'Lista',
     methods: {
         excluir(projetoId: number) {
-            this.store.dispatch(REMOVER_PROJETOS, projetoId)
+            this.store.dispatch(REMOVER_PROJETO, projetoId)
                 .then(() => {
                     this.store.commit(NOTIFICAR, {
                         titulo: 'PRONTO!',
@@ -62,7 +62,7 @@ export default defineComponent({
         store.dispatch(OBTER_PROJETOS)
         return {
             store,
-            projetos: computed(() => store.state.projetos)
+            projetos: computed(() => store.state.projeto.projetos)
         }
     }
 })

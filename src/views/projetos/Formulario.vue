@@ -17,7 +17,7 @@ import { defineComponent } from 'vue';
 import { myUseStore } from '@/store'
 import { TipoNotificacao } from '@/enums/tipo-notificacao';
 import useNotificador from '@/hooks/notificador'
-import { CADASTRAR_PROJETOS, ALTERAR_PROJETOS } from '@/store/tipo-acoes';
+import { CADASTRAR_PROJETO, ALTERAR_PROJETO } from '@/store/tipo-acoes';
 
 export default defineComponent({
     name: 'Formulario',
@@ -34,12 +34,12 @@ export default defineComponent({
     methods: {
         salvar() {
             if(this.id) {
-                this.store.dispatch(ALTERAR_PROJETOS, {
+                this.store.dispatch(ALTERAR_PROJETO, {
                     id: this.id,
                     nome: this.nomeDoProjeto
                 }).then(() => this.lidarComSucesso())
             } else {
-                this.store.dispatch(CADASTRAR_PROJETOS, this.nomeDoProjeto)
+                this.store.dispatch(CADASTRAR_PROJETO, this.nomeDoProjeto)
                     .then(() => this.lidarComSucesso())
             }
             
@@ -64,7 +64,7 @@ export default defineComponent({
     },
     mounted() {
         if (this.id) {
-            const projeto = this.store.state.projetos.find(projeto => projeto.id == this.id)
+            const projeto = this.store.state.projeto.projetos.find(projeto => projeto.id == this.id)
             this.nomeDoProjeto = projeto?.nome || '';
         }
     }

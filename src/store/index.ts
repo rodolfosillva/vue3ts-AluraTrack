@@ -1,41 +1,29 @@
-import IProjeto from "@/interfaces/IProjeto";
 import { InjectionKey } from "vue";
 import { createStore, Store, useStore } from "vuex";
-import { ADICIONA_PROJETO, DEFINIR_PROJETO,  ALTERA_PROJETO, EXCLUI_PROJETO, NOTIFICAR } from "./tipo-mutacoes";
+import { NOTIFICAR, EXCLUI_TAREFA, ADICIONA_TAREFA, ALTERA_TAREFA, DEFINIR_TAREFAS } from "./tipo-mutacoes";
 import { INotificacao } from "@/interfaces/INotificacao";
-import { CADASTRAR_PROJETOS, ALTERAR_PROJETOS, REMOVER_PROJETOS, OBTER_PROJETOS } from "./tipo-acoes";
+import {  CADASTRAR_TAREFA, REMOVER_TAREFA, ALTERAR_TAREFA, OBTER_TAREFAS } from "./tipo-acoes";
 import http from '@/http'
+import ITarefa from "@/interfaces/ITarefa";
+import { EstadoProjeto, projeto } from "./modules/projeto";
 
-interface state {
-    projetos: IProjeto[],
+export interface state {
+    tarefas: ITarefa[],
     notificacoes: INotificacao[],
+    projeto: EstadoProjeto
 }
 
 export const key: InjectionKey<Store<state>> = Symbol()
 
 export const store = createStore<state>({
     state: {
-        projetos: [],
-        notificacoes: []
+        tarefas: [],
+        notificacoes: [],
+        projeto: {
+            projetos: []
+        }
     },
     mutations: {
-        [ADICIONA_PROJETO](state, nomeDoProjeto: string) {
-            const projeto: IProjeto = {
-                id: new Date().toISOString(),
-                nome: nomeDoProjeto
-            } as IProjeto
-            state.projetos.push(projeto)
-        },
-        [DEFINIR_PROJETO](state, projetos: IProjeto[]) {
-            state.projetos = projetos;
-        },
-        [ALTERA_PROJETO](state, projeto: IProjeto) {
-            const index = state.projetos.findIndex(proj => proj.id == projeto.id)
-            state.projetos[index] = projeto;
-        },
-        [EXCLUI_PROJETO](state, id: string) {
-            state.projetos = state.projetos.filter(projeto => projeto.id != id);
-        },
         [NOTIFICAR](state, novaNotificacao: INotificacao) {
             novaNotificacao.id = new Date().getTime();
             state.notificacoes.push(novaNotificacao);
@@ -43,23 +31,38 @@ export const store = createStore<state>({
             setTimeout(() => {
                 state.notificacoes = state.notificacoes.filter(notificacao => notificacao.id != novaNotificacao.id);
             }, 3000)
-        }
+        },
+        [DEFINIR_TAREFAS](state, tarefas: ITarefa[]) {
+            state.tarefas = tarefas;
+        },
+        [ADICIONA_TAREFA](state, tarefa: ITarefa) {
+            state.tarefas.push(tarefa)
+        },
+        [ALTERA_TAREFA](state, tarefa: ITarefa) {
+            const index = state.tarefas.findIndex(taref => taref.id == tarefa.id)
+            state.tarefas[index] = tarefa;
+        },
     },
     actions: {
-        [OBTER_PROJETOS]({ commit }) {
-            http.get('/projetos')
-                .then(response => commit('DEFINIR_PROJETO', response.data))
+        [OBTER_TAREFAS]({ commit } ){
+            return http.get('/tarefas')
+                .then(response => commit(DEFINIR_TAREFAS, response.data))
         },
-        [CADASTRAR_PROJETOS](contexto, nomeDoprojeto: string) {
-            return http.post('/projetos', { nome: nomeDoprojeto})
+        [CADASTRAR_TAREFA]({ commit }, tarefa: ITarefa) {
+            return http.post('/tarefas', tarefa)
+                    .then((response) => commit(ADICIONA_TAREFA, response.data))
         },
-        [ALTERAR_PROJETOS](contexto, projeto: IProjeto) {
-            return http.put(`/projetos${projeto.id}`, projeto)
+        [ALTERAR_TAREFA]({ commit }, tarefa: ITarefa) {
+            return http.put(`/tarefas/${tarefa.id}`, tarefa)
+                .then(() => commit(ALTERA_TAREFA, tarefa))
         },
-        [REMOVER_PROJETOS]({ commit }, id: string) {
-            return http.delete(`/projetos/${id}`)
-                .then(() => commit(EXCLUI_PROJETO, id))
+        [REMOVER_TAREFA]({ commit }, id: string) {
+            return http.delete(`/tarefas/${id}`)
+                .then(() => commit(EXCLUI_TAREFA, id))
         }
+    },
+    modules: {
+        projeto
     }
 })
 

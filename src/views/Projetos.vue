@@ -14,7 +14,7 @@ export default defineComponent({
     setup() {
         const store = myUseStore()
         return {
-            projetos: computed(() => store.state.projetos)
+            projetos: computed(() => store.state.projeto.projetos)
         }
     }
 })

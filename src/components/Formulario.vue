@@ -24,9 +24,8 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import Temporizador from './Temporizador.vue';
-import { useStore } from 'vuex'
 
-import { key } from '@/store'
+import { myUseStore } from '@/store'
 
 export default defineComponent({
     name: 'Formulario',
@@ -49,9 +48,9 @@ export default defineComponent({
         }
     },
     setup() {
-        const store = useStore(key);
+        const store = myUseStore();
         return {
-            projetos: computed(() => store.state.projetos)
+            projetos: computed(() => store.state.projeto.projetos)
         }
     }
 })
