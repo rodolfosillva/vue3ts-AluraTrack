@@ -1,6 +1,14 @@
 <template>
   <Formulario @aoSalvarTarefa="salvarTarefa" />
   <div class="lista">
+    <div class="field">
+      <p class="control has-icons-left has-icons-right mb-5">
+        <input class="input" type="email" placeholder="Digite para filtrar" v-model="filtro">
+        <span class="icon is-small is-left">
+          <i class="fas fa-search"></i>
+        </span>
+      </p>
+    </div>
     <Box v-if="tarefas.length === 0">
       Você não está muito produtivo hoje :(
     </Box>
@@ -29,7 +37,7 @@
 </template>
   
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, ref, watchEffect } from 'vue';
 import Formulario from '../components/Formulario.vue';
 import Tarefa from '../components/Tarefa.vue';
 import ITarefa from '../interfaces/ITarefa'
@@ -66,11 +74,20 @@ export default defineComponent({
   },
   setup() {
     const store = myUseStore();
+    
+    const filtro = ref('');
+
     store.dispatch(OBTER_TAREFAS);
     store.dispatch(OBTER_PROJETOS);
+    
+    watchEffect(() => {
+      store.dispatch(OBTER_TAREFAS, filtro.value);
+    })
+
     return {
+      filtro,
       store: store,
-      tarefas: computed(() => store.state.tarefas),
+      tarefas: computed(() => store.state.tarefa.tarefas),
       projetos: computed(() => store.state.projeto.projetos)
     }
   }
@@ -78,7 +95,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.lista {
-  padding: 1.25rem;
-}
+  .lista {
+    padding: 1.25rem;
+  }
 </style>
